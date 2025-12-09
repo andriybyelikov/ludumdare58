@@ -6,13 +6,16 @@ import shaderSourceData           from '../shaders/fragment/3_data.glsl?raw';
 import shaderSourceGeometrySphere from '../shaders/fragment/geometry_sphere.glsl?raw';
 import shaderSourceGeometryPlane  from '../shaders/fragment/geometry_plane.glsl?raw';
 import shaderSourceGeometryScene  from '../shaders/fragment/geometry_scene.glsl?raw';
-import shaderSourceSimpleFragment from '../shaders/fragment/simple_fragment.glsl?raw';
+import shaderSourceToneMapping    from '../shaders/fragment/tone_mapping.glsl?raw';
+import shaderSourceRayTracing     from '../shaders/fragment/ray_tracing.glsl?raw';
 
 import shaderSourceVertexTransformVectors from '../shaders/vertex/transform_vectors.glsl?raw';
 import shaderSourceFragmentTransformVectors from '../shaders/fragment/transform_vectors.glsl?raw';
 
 import shaderSourceVertexLowRes from '../shaders/vertex/low_res.glsl?raw';
 import shaderSourceFragmentLowRes from '../shaders/fragment/low_res.glsl?raw';
+
+const PIXEL_SCALE = 4;
 
 main();
 
@@ -46,7 +49,7 @@ function main()
                 1,
             ],
             normal: normal,
-            reflected_color: [1, 1, 0.85, 1],
+            reflectance_spd: [1, 1, 0.85, 1],
         });
     }
 
@@ -166,6 +169,7 @@ function main()
     gl.useProgram(programRaytracing);
 
     gl.uniform1i(gl.getUniformLocation(programRaytracing, 'uObjectCount'), sceneData.objectCount);
+    gl.uniform1i(gl.getUniformLocation(programRaytracing, 'uLightCount'), sceneData.lightCount);
     gl.uniform1i(gl.getUniformLocation(programRaytracing, 'uTextureDataPointersScalar'), 0);
     gl.uniform1i(gl.getUniformLocation(programRaytracing, 'uTextureDataValuesScalar'), 1);
     gl.uniform1i(gl.getUniformLocation(programRaytracing, 'uTextureDataPointersVector'), 2);
@@ -464,12 +468,13 @@ function loadProgramRaytracing(gl, attributeNamesScalar, attributeNamesVector)
         shaderSourceGeometrySphere,
         shaderSourceGeometryPlane,
         shaderSourceGeometryScene,
-        shaderSourceSimpleFragment,
+        shaderSourceToneMapping,
+        shaderSourceRayTracing,
     ].join("\n"));
 
     if (shaderFragment === null)
     {
-        document.body.append(":') Failed to load shaderSimpleFragment");
+        document.body.append(":') Failed to load shaderRayTracing");
         return;
     }
 
@@ -561,11 +566,43 @@ function render(appContext)
     //gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, appContext.framebuffers.lowResFrameBuffer);
-    gl.viewport(0, 0, canvas.width / 3, canvas.height / 3);
+    gl.viewport(0, 0, canvas.width / PIXEL_SCALE, canvas.height / PIXEL_SCALE);
     gl.clearColor(0, 0, 0, 1);
     gl.clear(gl.COLOR_BUFFER_BIT);
     gl.useProgram(appContext.programs.raytracing);
-    gl.uniform2i(gl.getUniformLocation(appContext.programs.raytracing, 'uResolution'), canvas.width / 3, canvas.height / 3);
+
+    const vfovDeg = 45;
+    const vfovRad = vfovDeg * Math.PI / 180;
+    const tanHalfVFOV = Math.tan(vfovRad / 2);
+    const w = canvas.width / PIXEL_SCALE;
+    const h = canvas.height / PIXEL_SCALE;
+    const a = w / h;
+    const sx = tanHalfVFOV * a;
+    const sy = tanHalfVFOV;
+    
+    gl.uniformMatrix3fv(
+        gl.getUniformLocation(appContext.programs.raytracing, 'uPixelToRayTransform'),
+        false,
+        [
+            [
+                2 * sx / w,
+                0,
+                0,
+            ],
+            [
+                0,
+                2 * sy / h,
+                0,
+            ],
+            [
+                sx * (1 / w - 1),
+                sy * (1 / h - 1),
+                1,
+            ],
+        ]
+        .flat(),
+    );
+
     gl.uniform4fv(gl.getUniformLocation(appContext.programs.raytracing, 'uProgress'), new Float32Array([
         appContext.progress.gotRed ? 1 : 0,
         appContext.progress.gotGreen ? 1 : 0,
@@ -595,5 +632,5 @@ function onResize(appContext)
     canvas.style.height = `${canvas.height}px`;
 
     gl.bindTexture(gl.TEXTURE_2D, appContext.textures.lowResOutputTexture);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA32F, canvas.width / 3, canvas.height / 3, 0, gl.RGBA, gl.FLOAT, null);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA32F, canvas.width / PIXEL_SCALE, canvas.height / PIXEL_SCALE, 0, gl.RGBA, gl.FLOAT, null);
 }

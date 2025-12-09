@@ -45,15 +45,8 @@ const mat4 = {
         ];
     },
     product: function (a, b) {
-        let columns = [];
-        for (let c = 0; c < 4; c++) {
-            let column = [];
-            for (let r = 0; r < 4; r++) {
-                column.push(vec4.dot([a[0][r], a[1][r], a[2][r], a[3][r]], b[c]));
-            }
-            columns.push(column);
-        }
-        return columns;
+        let at = mat4.transposed(a);
+        return b.map((w) => at.map((v) => vec4.dot(v, w)));
     },
     lookAt: function(eye, center, up) {
         const forward = vec4.normalized(vec4.difference(center, eye));

@@ -10,18 +10,23 @@ const attributes = [
         mutable: true,
     },
     {
-        name: 'emitted_color',
-        type: 'vector',
-        mutable: false,
-    },
-    {
-        name: 'reflected_color',
-        type: 'vector',
-        mutable: false,
-    },
-    {
         name: 'radius',
         type: 'scalar',
+        mutable: false,
+    },
+    {
+        name: 'emission_spd',
+        type: 'vector',
+        mutable: false,
+    },
+    {
+        name: 'emission_range_squared',
+        type: 'scalar',
+        mutable: false,
+    },
+    {
+        name: 'reflectance_spd',
+        type: 'vector',
         mutable: false,
     },
 ];
@@ -35,49 +40,53 @@ const scene = {
         {
             name: "Red Light",
             position: [1, 1, 1, 1],
-            emitted_color: [1, 0, 0, 1],
+            emission_spd: [1, 0, 0, 1],
             radius: 0.05,
+            emission_range_squared: 4 ** 2,
         },
         {
             name: "Green Light",
             position: [15, 1, 1, 1],
-            emitted_color: [0, 1, 0, 1],
+            emission_spd: [0, 1, 0, 1],
             radius: 0.05,
+            emission_range_squared: 4 ** 2,
         },
         {
             name: "Blue Light",
             position: [1, 1, 15, 1],
-            emitted_color: [0, 0, 1, 1],
+            emission_spd: [0, 0, 1, 1],
             radius: 0.05,
+            emission_range_squared: 4 ** 2,
         },
         {
             name: "White Light",
             position: [8, 3.95, 8, 1],
-            emitted_color: [1, 1, 1, 1],
+            emission_spd: [1, 1, 1, 1],
             radius: 0.05,
+            emission_range_squared: 4 ** 2,
         },
         {
             name: "Floor",
             position: [0, 0, 0, 1],
             normal: [0, 1, 0, 0],
-            reflected_color: [0.8, 0.2, 0.2, 1],
+            reflectance_spd: [0.8, 0.2, 0.2, 1],
         },
         {
             name: "Ceiling",
             position: [0, 4, 0, 1],
             normal: [0, -1, 0, 0],
-            reflected_color: [1, 1, 0.85, 1],
+            reflectance_spd: [1, 1, 0.85, 1],
         },
         {
             name: "Terminal",
             position: [8, 0, 8, 1],
-            reflected_color: [1, 1, 1, 1],
+            reflectance_spd: [1, 1, 1, 1],
             radius: 1,
         },
         {
             name: "Terminal Button",
             position: [10, -1.75, 10, 1],
-            reflected_color: [1, 0.54, 0, 1],
+            reflectance_spd: [1, 0.54, 0, 1],
             radius: 2,
         },
     ],
@@ -88,6 +97,7 @@ function computeSceneData(additionalObjects = [])
     const camera = scene.objects.find((x) => x.name === "Camera");
     const objects = [...scene.objects.filter((x) => x !== camera), ...additionalObjects];
     const objectCount = objects.length;
+    const lightCount = objects.filter((x) => 'emission_spd' in x).length;
 
     //
 
@@ -125,6 +135,7 @@ function computeSceneData(additionalObjects = [])
     return {
         camera: camera,
         objectCount: objectCount,
+        lightCount: lightCount,
         scalars: scalars,
         vectors: vectors,
         vectorsMutable: vectorsMutable,

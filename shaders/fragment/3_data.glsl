@@ -1,4 +1,5 @@
 uniform int uObjectCount;
+uniform int uLightCount;
 
 uniform usampler2D uTextureDataPointersScalar;
 uniform sampler2D uTextureDataValuesScalar;

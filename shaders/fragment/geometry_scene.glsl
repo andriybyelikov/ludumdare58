@@ -56,25 +56,41 @@ float tRayIntersectsObject(vec4 rayOrigin, vec4 rayDirection, int objectID)
     }
 }
 
-struct RayIntersectionResult {
-    int objectID;
-    float t;
+struct Ray
+{
+    vec4 origin;
+    vec4 direction;
 };
 
-RayIntersectionResult rayIntersectsObject(vec4 rayOrigin, vec4 rayDirection)
+struct Hit
 {
-    RayIntersectionResult result = RayIntersectionResult(-1, 5000000.0);
+    vec4 x;
+    int objectID;
+};
+
+Hit trace(Ray ray)
+{
+    Hit hit = Hit(vec4(0), -1);
+
+    float tmin = 5000000.0;
 
     for (int objectID = 0; objectID < uObjectCount; objectID++)
     {
-        float t = tRayIntersectsObject(rayOrigin, rayDirection, objectID);
+        float t = tRayIntersectsObject(ray.origin, ray.direction, objectID);
 
-        if (0.0 <= t && t < result.t)
+        if (0.0 <= t && t < tmin)
         {
-            result.t = t;
-            result.objectID = objectID;
+            tmin = t;
+            hit.objectID = objectID;
         }
     }
 
-    return result;
+    hit.x = ray.origin + ray.direction * tmin;
+
+    return hit;
+}
+
+bool isObjectALight(int objectID)
+{
+    return objectID < uLightCount;
 }
