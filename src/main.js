@@ -573,34 +573,14 @@ function render(appContext)
 
     const vfovDeg = 45;
     const vfovRad = vfovDeg * Math.PI / 180;
-    const tanHalfVFOV = Math.tan(vfovRad / 2);
     const w = canvas.width / PIXEL_SCALE;
     const h = canvas.height / PIXEL_SCALE;
-    const a = w / h;
-    const sx = tanHalfVFOV * a;
-    const sy = tanHalfVFOV;
+    const pixelToRayMatrix = mat4.pixelToRay([w, h], vfovRad);
     
     gl.uniformMatrix3fv(
         gl.getUniformLocation(appContext.programs.raytracing, 'uPixelToRayTransform'),
         false,
-        [
-            [
-                2 * sx / w,
-                0,
-                0,
-            ],
-            [
-                0,
-                2 * sy / h,
-                0,
-            ],
-            [
-                sx * (1 / w - 1),
-                sy * (1 / h - 1),
-                1,
-            ],
-        ]
-        .flat(),
+        new Float32Array(pixelToRayMatrix.flat()),
     );
 
     gl.uniform4fv(gl.getUniformLocation(appContext.programs.raytracing, 'uProgress'), new Float32Array([

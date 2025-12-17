@@ -63,4 +63,26 @@ const mat4 = {
 
         return mat4.product(mat4.transposed(M), mat4.translation(vec4.sum([0, 0, 0, 1], vec4.difference([0, 0, 0, 1], eye))));
     },
+    pixelToRay: function(resolution, vfov) {
+        const w = resolution[0];
+        const h = resolution[1];
+        const t = Math.tan(vfov / 2);
+        return [
+            [
+                t * (2 / h),
+                0,
+                0,
+            ],
+            [
+                0,
+                t * (2 / h),
+                0,
+            ],
+            [
+                t * ((1 - w) / h),
+                t * ((1 - h) / h),
+                1,
+            ],
+        ];
+    },
 };
