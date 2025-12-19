@@ -15,6 +15,13 @@ import shaderSourceFragmentTransformVectors from '../shaders/fragment/transform_
 import shaderSourceVertexLowRes from '../shaders/vertex/low_res.glsl?raw';
 import shaderSourceFragmentLowRes from '../shaders/fragment/low_res.glsl?raw';
 
+import { DB } from './db';
+import { Geometry } from './utils/geometry';
+import { MapUtils } from './utils/map';
+import { computeSceneData } from './utils/scene';
+import { loadShader, loadProgram, loadDataTexture } from './utils/gl';
+import { scalar, vec4, mat4 } from './utils/math';
+
 const PIXEL_SCALE = 4;
 
 main();

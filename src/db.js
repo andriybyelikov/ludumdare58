@@ -1,4 +1,4 @@
-const DB = {
+export const DB = {
     map: [
         {
             size: [16, 16],

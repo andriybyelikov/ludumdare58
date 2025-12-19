@@ -1,4 +1,4 @@
-function loadShader(gl, type, source)
+export function loadShader(gl, type, source)
 {
     const shader = gl.createShader(type);
 
@@ -19,7 +19,7 @@ function loadShader(gl, type, source)
     return shader;
 }
 
-function loadProgram(gl, shaderVertex, shaderFragment)
+export function loadProgram(gl, shaderVertex, shaderFragment)
 {
     const program = gl.createProgram();
 
@@ -40,7 +40,7 @@ function loadProgram(gl, shaderVertex, shaderFragment)
     return program;
 }
 
-function loadDataTexture(gl, activeTexture, internalFormat, format, type, data)
+export function loadDataTexture(gl, activeTexture, internalFormat, format, type, data)
 {
     const texture = gl.createTexture();
     gl.activeTexture(activeTexture);

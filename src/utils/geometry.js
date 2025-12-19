@@ -1,4 +1,4 @@
-const Geometry = {
+export const Geometry = {
     Normals: {
         LEFT: [-1, 0, 0, 0],
         RIGHT: [1, 0, 0, 0],

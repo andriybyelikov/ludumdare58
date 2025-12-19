@@ -1,9 +1,9 @@
-const scalar = {
+export const scalar = {
     clamp: (value, min, max) => Math.min(Math.max(value, min), max),
     mod: (x, m) => ((x % m) + m) % m,
 };
 
-const vec3 = {
+export const vec3 = {
     crossProduct: function (a, b) {
         return [
             a[1] * b[2] - a[2] * b[1],
@@ -13,7 +13,7 @@ const vec3 = {
     },
 };
 
-const vec4 = {
+export const vec4 = {
     length: (v) => Math.sqrt(v[0] ** 2 + v[1] ** 2 + v[2] ** 2 + v[3] ** 2),
     normalized: (v) =>
     {
@@ -26,7 +26,7 @@ const vec4 = {
     dot: (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2] + a[3] * b[3],
 };
 
-const mat4 = {
+export const mat4 = {
     translation: (t) =>
     {
         return [

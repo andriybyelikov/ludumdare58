@@ -92,7 +92,7 @@ const scene = {
     ],
 };
 
-function computeSceneData(additionalObjects = [])
+export function computeSceneData(additionalObjects = [])
 {
     const camera = scene.objects.find((x) => x.name === "Camera");
     const objects = [...scene.objects.filter((x) => x !== camera), ...additionalObjects];

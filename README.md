@@ -13,3 +13,9 @@ https://ldjam.com/events/ludum-dare/58/wavelength-collector
 ```
 npx vite
 ```
+
+## Bundling for production
+
+```
+npx vite build
+```

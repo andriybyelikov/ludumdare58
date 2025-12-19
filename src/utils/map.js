@@ -1,4 +1,4 @@
-const MapUtils = {
+export const MapUtils = {
     getTileAt: function (map, x, z) {
         const w = map.size[0];
         const h = map.size[1];
